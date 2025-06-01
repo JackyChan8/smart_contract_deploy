@@ -22,7 +22,7 @@ class SmartContract:
             Получения Переменных из .env
         """
         IS_TEST = os.getenv('IS_TEST')
-        if IS_TEST:
+        if IS_TEST == 'True':
             self.RPC_URL_PRIMARY   = os.getenv('RPC_URL_TEST')
             self.RPC_URL_FALLBACK  = os.getenv('RPC_URL_TEST_FALLBACK', '')
             self.PRIVATE_KEY       = os.getenv('PRIVATE_KEY_TEST')
@@ -115,7 +115,7 @@ class SmartContract:
             # ABI и байткод
             with open(self.compile_path, 'r') as f:
                 compiled = json.load(f)
-            
+
             contract_data = compiled['contracts']['Contract.sol']['SweepAndWithdrawETH']
             abi           = contract_data['abi']
             bytecode      = contract_data['evm']['bytecode']['object']
@@ -153,12 +153,12 @@ class SmartContract:
                 receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash, timeout=self.RECEIPT_TO)
             except TimeExhausted:
                 raise SystemExit("❌ Транзакция не подтвердилась за время.")
-            
+
             print(f"✅ Контракт задеплоен! Адрес: {receipt.contractAddress}")
             print(f"Потрачено газа: {receipt.gasUsed}")
 
             with open('contract_into.txt', 'a', encoding='utf-8') as f:
-                f.write(f'Адрес Контракта: {receipt.contractAddress}')
+                f.write(f'Адрес Контракта: {receipt.contractAddress}\n')
         except Exception as e:
             raise SystemExit(f'❌ Произошла ошибка при загрузки смарт контракта в сеть. Ошибка: {e}')
 
